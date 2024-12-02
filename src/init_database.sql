@@ -1,4 +1,5 @@
 --Lien doc postgresql erreurs: https://www.postgresql.org/docs/current/errcodes-appendix.html
+DROP TABLE IF EXISTS "transport_type", "zone", "station", "line", "station_to_line", "person", "employee", "contract", "offer", "subscription", "bill" CASCADE;
 
 CREATE TABLE "transport_type" (
   "code" VARCHAR(3) PRIMARY KEY,
