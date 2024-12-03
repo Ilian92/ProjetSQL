@@ -34,7 +34,7 @@ CREATE TABLE "station_to_line" (
 );
 
 CREATE TABLE "person" (
-  "id" int PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "firstname" varchar(32),
   "lastname" varchar(32),
   "email" varchar(128),
@@ -88,7 +88,7 @@ CREATE TABLE "subscription" (
 );
 
 CREATE TABLE "bill" (
-  "id" int PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "email" VARCHAR(128),
   "year" int,
   "month" int,
