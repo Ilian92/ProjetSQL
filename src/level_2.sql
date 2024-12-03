@@ -18,6 +18,9 @@ EXCEPTION
     -- Vérifier si l'email est déjà utilisé
     WHEN unique_violation THEN
         RAISE NOTICE 'Cet email a déjà été utilisé, veuillez en choisir un autre.';
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Mauvaise utilisation de la fonction add_person.';
+        RETURN FALSE; 
 END;
 $$ LANGUAGE plpgsql;
 
@@ -37,10 +40,18 @@ CREATE OR REPLACE FUNCTION add_offer(
 RETURNS BOOLEAN AS $$
 BEGIN
     -- Vérifier si les zones existent et si le nombre de mois est supérieur à 0
-    IF NOT EXISTS (SELECT 1 FROM zone WHERE id = new_zone_from) THEN
+    IF NOT EXISTS (
+        SELECT * 
+        FROM zone 
+        WHERE id = new_zone_from
+    ) THEN
         RAISE NOTICE 'La zone de départ n''existe pas.';
         RETURN FALSE;
-    ELSIF NOT EXISTS (SELECT 1 FROM zone WHERE id = new_zone_to) THEN
+    ELSIF NOT EXISTS (
+        SELECT * 
+        FROM zone 
+        WHERE id = new_zone_to
+    ) THEN
         RAISE NOTICE 'La zone d''arrivée n''existe pas.';
         RETURN FALSE;
     ELSIF new_nb_month <= 0 THEN
@@ -52,8 +63,54 @@ BEGIN
         VALUES (new_code, new_name, new_price, new_nb_month, new_zone_from, new_zone_to);
         RETURN FOUND;
     END IF;
+    EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Mauvaise utilisation de la fonction add_offer.';
+        RETURN FALSE;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Test de la fonction add_offer
-SELECT add_offer('O1234', 'Forfait Jeune', 14.99, 1, 2, 8);
+SELECT add_offer('O1234', 'Forfait Jeune', 14.99, 1, 2, 3);
+
+-- EXERCICE 3 ##################################
+-- Création de la fonction add_subscription (date_sub définie automatiquement à la date de création)
+CREATE OR REPLACE FUNCTION add_subscription(
+    new_num INT,
+    new_email VARCHAR(128),
+    new_code VARCHAR(5)
+    --new_date_sub DATE
+)
+RETURNS BOOLEAN AS $$
+BEGIN
+-- Vérifier si l'utilisateur a déjà un abonnement en attente ou incomplet
+    IF EXISTS (
+        SELECT *
+        FROM subscription
+        WHERE email = new_email
+        AND (status = 'Pending' OR status = 'Incomplete')
+    ) THEN
+        RAISE NOTICE 'L''utilisateur a déjà un abonnement en attente ou incomplet.';
+        RETURN FALSE;
+    END IF;
+    ELSIF NOT EXISTS (
+        SELECT *
+        FROM person
+        WHERE email = new_email
+    ) THEN
+        RAISE NOTICE 'L''utilisateur n''existe pas.';
+        RETURN FALSE;
+    END IF;
+    -- Insérer le nouvel abonnement
+    INSERT INTO subscription (num, email, code, date_sub)
+    VALUES (new_num, new_email, new_code, CURRENT_DATE/*new_date_sub*/);
+    RETURN TRUE;
+EXCEPTION
+    WHEN unique_violation THEN
+        RAISE NOTICE 'Un abonnement avec le numéro "%" existe déjà.', new_num;
+        RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Test de la fonction add_subscription
+SELECT add_subscription(1, 'ilian@gmail.com', 'O1234');

@@ -84,7 +84,7 @@ CREATE TABLE "subscription" (
   "email" varchar(128),
   "code" varchar(5),
   "date_sub" date,
-  "status" varchar(20)
+  "status" varchar(20) DEFAULT 'Incomplete'
 );
 
 CREATE TABLE "bill" (
