@@ -89,7 +89,7 @@ CREATE TABLE "subscription" (
 
 CREATE TABLE "bill" (
   "id" int PRIMARY KEY,
-  "email" int,
+  "email" VARCHAR(128),
   "year" int,
   "month" int,
   "montant_total" decimal(10,2),
