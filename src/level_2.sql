@@ -1,4 +1,5 @@
---création de la fonction add_person
+-- EXERCICE 1 ##################################
+-- Création de la fonction add_person
 CREATE OR REPLACE FUNCTION add_person(
     new_firstname varchar(32),
     new_lastname varchar(32),
@@ -10,16 +11,49 @@ CREATE OR REPLACE FUNCTION add_person(
 )
 RETURNS void AS $$
 BEGIN
-    -- Vérifier si l'email existe déjà
-    IF EXISTS (SELECT 1 FROM person WHERE email = new_email) THEN
+    -- Insérer la nouvelle personne
+    INSERT INTO person (firstname, lastname, email, phone, address, town, zipcode)
+    VALUES (new_firstname, new_lastname, new_email, new_phone, new_address, new_town, new_zipcode);
+EXCEPTION
+    -- Vérifier si l'email est déjà utilisé
+    WHEN unique_violation THEN
         RAISE NOTICE 'Cet email a déjà été utilisé, veuillez en choisir un autre.';
+END;
+$$ LANGUAGE plpgsql;
+
+-- Test de la fonction add_person
+SELECT add_person('ilian','igoudjil','ilian@gmail.com','0601020304',' 10 Rue crampté','Paris','75002');
+
+-- EXERCICE 2 ##################################
+-- Création de la fonction add_offer
+CREATE OR REPLACE FUNCTION add_offer(
+    new_code VARCHAR(5),
+    new_name VARCHAR(32),
+    new_price FLOAT,
+    new_nb_month INT,
+    new_zone_from INT,
+    new_zone_to INT
+)
+RETURNS BOOLEAN AS $$
+BEGIN
+    -- Vérifier si les zones existent et si le nombre de mois est supérieur à 0
+    IF NOT EXISTS (SELECT 1 FROM zone WHERE id = new_zone_from) THEN
+        RAISE NOTICE 'La zone de départ n''existe pas.';
+        RETURN FALSE;
+    ELSIF NOT EXISTS (SELECT 1 FROM zone WHERE id = new_zone_to) THEN
+        RAISE NOTICE 'La zone d''arrivée n''existe pas.';
+        RETURN FALSE;
+    ELSIF new_nb_month <= 0 THEN
+        RAISE NOTICE 'Le nombre de mois doit être positif et non nul.';
+        RETURN FALSE;
     ELSE
-        -- Insérer la nouvelle personne
-        INSERT INTO person (firstname, lastname, email, phone, address, town, zipcode)
-        VALUES (new_firstname, new_lastname, new_email, new_phone, new_address, new_town, new_zipcode);
+        -- Insérer la nouvelle offre
+        INSERT INTO offer (code, name, price, nb_month, zone_from, zone_to)
+        VALUES (new_code, new_name, new_price, new_nb_month, new_zone_from, new_zone_to);
+        RETURN FOUND;
     END IF;
 END;
 $$ LANGUAGE plpgsql;
 
--- test de la fonction add_person
-SELECT add_person('ilian','igoudjil','ilian@gmail.com','0601020304',' 10 Rue crampté','Paris','75002');
+-- Test de la fonction add_offer
+SELECT add_offer('O1234', 'Forfait Jeune', 14.99, 1, 2, 8);
