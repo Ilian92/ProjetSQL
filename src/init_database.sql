@@ -96,21 +96,27 @@ CREATE TABLE "bill" (
   "status" varchar(20)
 );
 
+-- ajout de contraintes pour régler les problèmes de clés étrangères
+ALTER TABLE "employee" ADD CONSTRAINT unique_login UNIQUE ("login");
+ALTER TABLE "person" ADD CONSTRAINT unique_id UNIQUE ("id");
+ALTER TABLE "person" ADD CONSTRAINT unique_email UNIQUE ("email"); -- règle les erreurs du dessous 
+
+-- ajout des clés étrangères
 ALTER TABLE "station" ADD FOREIGN KEY ("zone") REFERENCES "zone" ("id");
 
 ALTER TABLE "station" ADD FOREIGN KEY ("type") REFERENCES "transport_type" ("code");
 
-ALTER TABLE "line" ADD FOREIGN KEY ("Transport_id") REFERENCES "transport_type" ("code");
+ALTER TABLE "line" ADD FOREIGN KEY ("transport_id") REFERENCES "transport_type" ("code");
 
 ALTER TABLE "station_to_line" ADD FOREIGN KEY ("line") REFERENCES "line" ("code");
 
 ALTER TABLE "station_to_line" ADD FOREIGN KEY ("station") REFERENCES "station" ("id");
 
-ALTER TABLE "employee" ADD FOREIGN KEY ("email") REFERENCES "person" ("email");
+ALTER TABLE "employee" ADD FOREIGN KEY ("email") REFERENCES "person" ("email"); --erreur ici
 
-ALTER TABLE "contract" ADD FOREIGN KEY ("login") REFERENCES "employee" ("login");
+ALTER TABLE "contract" ADD FOREIGN KEY ("login") REFERENCES "employee" ("login"); --erreur ici
 
-ALTER TABLE "contract" ADD FOREIGN KEY ("email") REFERENCES "employee" ("email");
+ALTER TABLE "contract" ADD FOREIGN KEY ("email") REFERENCES "employee" ("email"); --erreur ici
 
 ALTER TABLE "contract" ADD FOREIGN KEY ("service") REFERENCES "service" ("name");
 
@@ -124,8 +130,8 @@ ALTER TABLE "offer" ADD FOREIGN KEY ("zone_from") REFERENCES "zone" ("id");
 
 ALTER TABLE "offer" ADD FOREIGN KEY ("zone_to") REFERENCES "zone" ("id");
 
-ALTER TABLE "subscription" ADD FOREIGN KEY ("email") REFERENCES "person" ("id");
+ALTER TABLE "subscription" ADD FOREIGN KEY ("email") REFERENCES "person" ("email"); --erreur ici
 
 ALTER TABLE "subscription" ADD FOREIGN KEY ("code") REFERENCES "offer" ("code");
 
-ALTER TABLE "bill" ADD FOREIGN KEY ("email") REFERENCES "person" ("email");
+ALTER TABLE "bill" ADD FOREIGN KEY ("email") REFERENCES "person" ("email"); --erreur ici
