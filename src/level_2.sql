@@ -190,3 +190,15 @@ $$ LANGUAGE plpgsql;
 
 -- Test de la fonction update_offer_price
 SELECT update_offer_price('O1234', 19.99);
+
+-- EXERCICE 6 ################################
+-- Création de la vue view_user_small_name
+CREATE OR REPLACE VIEW view_user_small_name AS
+SELECT firstname, lastname
+FROM person
+WHERE LENGTH(lastname) <= 4;
+
+-- Test de la vue view_user_small_name
+SELECT add_person('ilian','test','test@gmail.com','0612345678','10 Rue de la loutre','Levallois','92300');
+SELECT * FROM view_user_small_name;
+
