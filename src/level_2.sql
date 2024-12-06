@@ -153,3 +153,40 @@ $$ LANGUAGE plpgsql;
 
 -- Test de la fonction update_status
 SELECT update_status(1, 'Pending');
+
+-- EXERCICE 5 ##################################
+-- Création de la fonction update_offer_price
+CREATE OR REPLACE FUNCTION update_offer_price(
+    offer_code VARCHAR(5),
+    new_price FLOAT
+)
+RETURNS BOOLEAN AS $$
+BEGIN
+    -- Vérifier si l'offre existe
+    IF NOT EXISTS (
+        SELECT *
+        FROM offer
+        WHERE offer_code = code
+    ) THEN
+        RAISE NOTICE 'L''offre n''existe pas.';
+        RETURN FALSE;
+    -- Vérifier si le nouveau prix est positif et non nul
+    ELSIF new_price <= 0 THEN
+        RAISE NOTICE 'Le prix doit être positif et non nul.';
+        RETURN FALSE;
+    -- Mettre à jour le prix de l'offre
+    ELSE
+        UPDATE offer
+        SET price = new_price
+        WHERE offer_code = code;
+        RETURN TRUE;
+    END IF;
+    EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Mauvaise utilisation de la fonction update_offer_price.';
+        RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Test de la fonction update_offer_price
+SELECT update_offer_price('O1234', 19.99);

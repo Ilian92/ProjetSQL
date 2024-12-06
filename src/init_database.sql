@@ -71,7 +71,10 @@ CREATE TABLE "journey" (
 );
 
 CREATE TABLE "offer" (
-  "code" varchar(5) PRIMARY KEY,
+  -- Pour le code on pourrait mettre un serial ou un int ici et mettre une contrainte pour limiter la taille ? comme ça par exemple:
+  --PRIMARY KEY (code), 
+  --constraint limit_code_size check (code <= 99999)
+  "code" varchar(5) PRIMARY KEY, 
   "name" varchar(32),
   "price" decimal(10,2),
   "nb_month" int,
