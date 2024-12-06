@@ -9,15 +9,17 @@ CREATE OR REPLACE FUNCTION add_person(
     new_town varchar(32),
     new_zipcode char(5)
 )
-RETURNS void AS $$
+RETURNS BOOLEAN AS $$
 BEGIN
     -- Insérer la nouvelle personne
     INSERT INTO person (firstname, lastname, email, phone, address, town, zipcode)
     VALUES (new_firstname, new_lastname, new_email, new_phone, new_address, new_town, new_zipcode);
+    RETURN FOUND;
 EXCEPTION
     -- Vérifier si l'email est déjà utilisé
     WHEN unique_violation THEN
         RAISE NOTICE 'Cet email a déjà été utilisé, veuillez en choisir un autre.';
+        RETURN FALSE;
     WHEN OTHERS THEN
         RAISE NOTICE 'Mauvaise utilisation de la fonction add_person.';
         RETURN FALSE; 
@@ -92,7 +94,6 @@ BEGIN
     ) THEN
         RAISE NOTICE 'L''utilisateur a déjà un abonnement en attente ou incomplet.';
         RETURN FALSE;
-    END IF;
     ELSIF NOT EXISTS (
         SELECT *
         FROM person
@@ -114,3 +115,41 @@ $$ LANGUAGE plpgsql;
 
 -- Test de la fonction add_subscription
 SELECT add_subscription(1, 'ilian@gmail.com', 'O1234');
+
+-- EXERCICE 4 ##################################
+-- Création de la fonction update_status
+CREATE OR REPLACE FUNCTION update_status(
+    new_num INT,
+    new_status VARCHAR(20)
+)
+RETURNS BOOLEAN AS $$
+BEGIN
+    -- Vérifier si le nouveau statut est valide
+    IF new_status NOT IN (
+        'Registered', 'Pending', 'Incomplete'
+    ) THEN
+        RAISE NOTICE 'Statut invalide. Les statuts valides sont: Registered, Pending, Incomplete.';
+        RETURN FALSE;
+    -- Vérifier si l'abonnement existe
+    ELSIF NOT EXISTS (
+        SELECT *
+        FROM subscription
+        WHERE new_num = num
+    ) THEN
+        RAISE NOTICE 'L''abonnement n''existe pas.';
+        RETURN FALSE;
+    END IF;
+    -- Mettre à jour le statut de l'abonnement
+    UPDATE subscription
+    SET status = new_status
+    WHERE new_num = num;
+    RETURN TRUE;
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Mauvaise utilisation de la fonction update_status.';
+        RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Test de la fonction update_status
+SELECT update_status(1, 'Pending');
