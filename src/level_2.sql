@@ -196,7 +196,8 @@ SELECT update_offer_price('O1234', 19.99);
 CREATE OR REPLACE VIEW view_user_small_name AS
 SELECT firstname, lastname
 FROM person
-WHERE LENGTH(lastname) <= 4;
+WHERE LENGTH(lastname) <= 4
+ORDER BY lastname, firstname;
 
 -- Test de la vue view_user_small_name
 SELECT add_person('ilian','test','test@gmail.com','0612345678','10 Rue de la loutre','Levallois','92300');
