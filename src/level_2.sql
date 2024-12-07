@@ -121,6 +121,7 @@ SELECT add_subscription(3, 'aaaa@gmail.com', '01234');
 
 -- EXERCICE 4 ##################################
 -- Création de la fonction update_status
+-- POSTIT: Rajouter une date de status pour savoir quand le status a été modifié
 CREATE OR REPLACE FUNCTION update_status(
     new_num INT,
     new_status VARCHAR(20)
@@ -243,3 +244,22 @@ ORDER BY subscription.date_sub;
 
 -- Test de la vue view_pending_subscriptions
 SELECT * FROM view_pending_subscriptions;
+
+-- EXERCICE 10 ###################################
+-- Création de la vue view_old_subscription
+CREATE OR REPLACE VIEW view_old_subscription AS
+SELECT
+    person.lastname,
+    person.firstname,
+    offer.name AS subscription,
+    subscription.status
+FROM person
+INNER JOIN subscription ON person.email = subscription.email
+INNER JOIN offer ON subscription.code = offer.code
+WHERE (subscription.status = 'Incomplete' OR subscription.status = 'Pending')
+  AND subscription.date_sub <= CURRENT_DATE - INTERVAL '1 year'
+ORDER BY CONCAT(person.firstname, ' ', person.lastname), offer.name;
+
+-- Test de la vue view_old_subscription
+UPDATE subscription SET date_sub = 2022_12_07 WHERE email = test@gmail.com;
+SELECT * FROM view_old_subscription;
