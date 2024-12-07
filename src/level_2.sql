@@ -259,6 +259,7 @@ INNER JOIN offer ON subscription.code = offer.code
 WHERE (subscription.status = 'Incomplete' OR subscription.status = 'Pending')
   AND subscription.date_sub <= CURRENT_DATE - INTERVAL '1 year'
 ORDER BY CONCAT(person.firstname, ' ', person.lastname), offer.name;
+-- POSTIT: Modifier la vérification de la date quand une colonne date_status_update sera ajoutée
 
 -- Test de la vue view_old_subscription
 UPDATE subscription SET date_sub = 2022_12_07 WHERE email = test@gmail.com;
