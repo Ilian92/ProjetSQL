@@ -216,3 +216,15 @@ ORDER BY CONCAT(person.firstname, ' ', person.lastname), offer.name;
 
 -- Test de la vue view_user_subscription
 SELECT * FROM view_user_subscription;
+
+-- EXERCICE 8 ####################################
+-- Création de la vue view_unloved_offers
+CREATE OR REPLACE VIEW view_unloved_offers AS
+SELECT offer.name
+FROM offer
+LEFT JOIN subscription ON offer.code = subscription.code
+WHERE subscription.code IS NULL
+ORDER BY offer.name;
+
+-- Test de la vue view_unloved_offers
+SELECT * FROM view_unloved_offers;
