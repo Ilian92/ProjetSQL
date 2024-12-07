@@ -203,3 +203,16 @@ ORDER BY lastname, firstname;
 SELECT add_person('ilian','test','test@gmail.com','0612345678','10 Rue de la loutre','Levallois','92300');
 SELECT * FROM view_user_small_name;
 
+-- EXERCICE 7 ################################
+-- Création de la vue view_user_subscription
+CREATE OR REPLACE VIEW view_user_subscription AS
+SELECT DISTINCT
+    CONCAT(person.firstname, ' ', person.lastname) AS user,
+    offer.name AS offer
+FROM person
+INNER JOIN subscription ON person.email = subscription.email
+INNER JOIN offer ON subscription.code = offer.code
+ORDER BY CONCAT(person.firstname, ' ', person.lastname), offer.name;
+
+-- Test de la vue view_user_subscription
+SELECT * FROM view_user_subscription;
