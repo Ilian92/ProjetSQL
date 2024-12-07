@@ -78,7 +78,7 @@ SELECT add_offer('O1234', 'Forfait Jeune', 14.99, 1, 2, 3);
 -- EXERCICE 3 ##################################
 -- Création de la fonction add_subscription (date_sub définie automatiquement à la date de création)
 CREATE OR REPLACE FUNCTION add_subscription(
-    new_num INT,
+    new_num INT, -- POSTIT: Modifier pour que le num soit auto-incrémenté ?
     new_email VARCHAR(128),
     new_code VARCHAR(5)
     --new_date_sub DATE
@@ -110,11 +110,14 @@ EXCEPTION
     WHEN unique_violation THEN
         RAISE NOTICE 'Un abonnement avec le numéro "%" existe déjà.', new_num;
         RETURN FALSE;
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Mauvaise utilisation de la fonction add_subscription.';
+        RETURN FALSE;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Test de la fonction add_subscription
-SELECT add_subscription(1, 'ilian@gmail.com', 'O1234');
+SELECT add_subscription(3, 'aaaa@gmail.com', '01234');
 
 -- EXERCICE 4 ##################################
 -- Création de la fonction update_status
@@ -228,3 +231,15 @@ ORDER BY offer.name;
 
 -- Test de la vue view_unloved_offers
 SELECT * FROM view_unloved_offers;
+
+-- EXERCICE 9 ###################################
+-- Création de la vue view_pending_subscriptions
+CREATE OR REPLACE VIEW view_pending_subscriptions AS
+SELECT person.lastname, person.firstname
+FROM person
+INNER JOIN subscription ON person.email = subscription.email
+WHERE subscription.status = 'Pending'
+ORDER BY subscription.date_sub;
+
+-- Test de la vue view_pending_subscriptions
+SELECT * FROM view_pending_subscriptions;
