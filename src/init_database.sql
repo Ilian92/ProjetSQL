@@ -1,9 +1,16 @@
 --Lien doc postgresql erreurs: https://www.postgresql.org/docs/current/errcodes-appendix.html
-DROP TABLE IF EXISTS "transport_type", "zone", "station", "line", "station_to_line", "person", "employee", "contract", "offer", "subscription", "bill" CASCADE;
+
+--Créer un docker "postgresProjet" en se plaçant d'abord dans le dossier local src: docker run --name postgresProjet -d -p 55433:5432 -e POSTGRES_PASSWORD=toto --mount type=bind,src=$(pwd),target=/sql postgres:15-alpine
+--Se connecter au docker: docker exec -it postgresProjet 
+--Se placer dans le dossier sql: cd sql
+--Se connecter à la base de données: psql -U postgres
+--Lancer le(s) script(s): \i [nom du fichier].sql
+
+DROP TABLE IF EXISTS "transport_type", "zone", "station", "line", "station_to_line", "person", "employee", "contract", "offer", "subscription", "bill", "journey", "service" CASCADE;
 
 CREATE TABLE "transport_type" (
-  "code" VARCHAR(3) PRIMARY KEY,
-  "name" VARCHAR(32),
+  "code" VARCHAR(3) UNIQUE PRIMARY KEY,
+  "name" VARCHAR(32) UNIQUE,
   "capacity" int NOT NULL CHECK (capacity > 0),
   "avg_interval" int NOT NULL CHECK (capacity > 0)
 );
@@ -34,10 +41,10 @@ CREATE TABLE "station_to_line" (
 );
 
 CREATE TABLE "person" (
-  "id" serial PRIMARY KEY,
+  "id" serial UNIQUE PRIMARY KEY,
   "firstname" varchar(32),
   "lastname" varchar(32),
-  "email" varchar(128),
+  "email" varchar(128) UNIQUE,
   "phone" char(10),
   "address" text,
   "town" varchar(32),
@@ -45,8 +52,8 @@ CREATE TABLE "person" (
 );
 
 CREATE TABLE "employee" (
-  "login" varchar(20),
-  "email" VARCHAR(128)
+  "login" varchar(20) UNIQUE,
+  "email" VARCHAR(128) UNIQUE
 );
 
 CREATE TABLE "service" (
@@ -71,9 +78,6 @@ CREATE TABLE "journey" (
 );
 
 CREATE TABLE "offer" (
-  -- Pour le code on pourrait mettre un serial ou un int ici et mettre une contrainte pour limiter la taille ? comme ça par exemple:
-  --PRIMARY KEY (code), 
-  --constraint limit_code_size check (code <= 99999)
   "code" varchar(5) PRIMARY KEY, 
   "name" varchar(32),
   "price" decimal(10,2),
@@ -99,11 +103,6 @@ CREATE TABLE "bill" (
   "status" varchar(20)
 );
 
--- ajout de contraintes pour régler les problèmes de clés étrangères
-ALTER TABLE "employee" ADD CONSTRAINT unique_login UNIQUE ("login");
-ALTER TABLE "person" ADD CONSTRAINT unique_id UNIQUE ("id");
-ALTER TABLE "person" ADD CONSTRAINT unique_email UNIQUE ("email"); -- règle les erreurs du dessous 
-
 -- ajout des clés étrangères
 ALTER TABLE "station" ADD FOREIGN KEY ("zone") REFERENCES "zone" ("id");
 
@@ -115,11 +114,11 @@ ALTER TABLE "station_to_line" ADD FOREIGN KEY ("line") REFERENCES "line" ("code"
 
 ALTER TABLE "station_to_line" ADD FOREIGN KEY ("station") REFERENCES "station" ("id");
 
-ALTER TABLE "employee" ADD FOREIGN KEY ("email") REFERENCES "person" ("email"); --erreur ici
+ALTER TABLE "employee" ADD FOREIGN KEY ("email") REFERENCES "person" ("email"); 
 
-ALTER TABLE "contract" ADD FOREIGN KEY ("login") REFERENCES "employee" ("login"); --erreur ici
+ALTER TABLE "contract" ADD FOREIGN KEY ("login") REFERENCES "employee" ("login"); 
 
-ALTER TABLE "contract" ADD FOREIGN KEY ("email") REFERENCES "employee" ("email"); --erreur ici
+ALTER TABLE "contract" ADD FOREIGN KEY ("email") REFERENCES "employee" ("email"); 
 
 ALTER TABLE "contract" ADD FOREIGN KEY ("service") REFERENCES "service" ("name");
 
@@ -133,8 +132,8 @@ ALTER TABLE "offer" ADD FOREIGN KEY ("zone_from") REFERENCES "zone" ("id");
 
 ALTER TABLE "offer" ADD FOREIGN KEY ("zone_to") REFERENCES "zone" ("id");
 
-ALTER TABLE "subscription" ADD FOREIGN KEY ("email") REFERENCES "person" ("email"); --erreur ici
+ALTER TABLE "subscription" ADD FOREIGN KEY ("email") REFERENCES "person" ("email"); 
 
 ALTER TABLE "subscription" ADD FOREIGN KEY ("code") REFERENCES "offer" ("code");
 
-ALTER TABLE "bill" ADD FOREIGN KEY ("email") REFERENCES "person" ("email"); --erreur ici
+ALTER TABLE "bill" ADD FOREIGN KEY ("email") REFERENCES "person" ("email"); 

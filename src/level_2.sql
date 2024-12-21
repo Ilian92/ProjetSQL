@@ -72,13 +72,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+--Création de zones
+SELECT add_zone('zone1', 11);
+SELECT add_zone('zone2', 12);
+SELECT add_zone('zone3', 13);
+SELECT add_zone('zone4', 14);
 -- Test de la fonction add_offer
-SELECT add_offer('O1234', 'Forfait Jeune', 14.99, 1, 2, 3);
+SELECT add_offer('00001', 'Forfait Jeune', 14.99, 1, 2, 3);
 
 -- EXERCICE 3 ##################################
 -- Création de la fonction add_subscription (date_sub définie automatiquement à la date de création)
 CREATE OR REPLACE FUNCTION add_subscription(
-    new_num INT, -- POSTIT: Modifier pour que le num soit auto-incrémenté ?
+    new_num INT,
     new_email VARCHAR(128),
     new_code VARCHAR(5)
     --new_date_sub DATE
@@ -117,7 +122,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Test de la fonction add_subscription
-SELECT add_subscription(3, 'aaaa@gmail.com', '01234');
+SELECT add_subscription(1, 'ilian@gmail.com', '00001');
 
 -- EXERCICE 4 ##################################
 -- Création de la fonction update_status
@@ -193,7 +198,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Test de la fonction update_offer_price
-SELECT update_offer_price('O1234', 19.99);
+SELECT update_offer_price('00001', 19.99);
 
 -- EXERCICE 6 ################################
 -- Création de la vue view_user_small_name
@@ -262,5 +267,5 @@ ORDER BY CONCAT(person.firstname, ' ', person.lastname), offer.name;
 -- POSTIT: Modifier la vérification de la date quand une colonne date_status_update sera ajoutée
 
 -- Test de la vue view_old_subscription
-UPDATE subscription SET date_sub = 2022_12_07 WHERE email = test@gmail.com;
+UPDATE subscription SET date_sub = '2022_12_07' WHERE email = 'ilian@gmail.com';
 SELECT * FROM view_old_subscription;
