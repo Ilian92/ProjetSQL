@@ -269,3 +269,20 @@ ORDER BY CONCAT(person.firstname, ' ', person.lastname), offer.name;
 -- Test de la vue view_old_subscription
 UPDATE subscription SET date_sub = '2022_12_07' WHERE email = 'ilian@gmail.com';
 SELECT * FROM view_old_subscription;
+
+-- EXERCICE 11 ##################################
+-- Création de list_station_near_user
+CREATE OR REPLACE FUNCTION list_station_near_user(user_email VARCHAR(128))
+RETURNS SETOF VARCHAR(64) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT DISTINCT LOWER(station.name)::VARCHAR(64) AS station_name
+    FROM station
+    INNER JOIN person ON station.town = person.town
+    WHERE person.email = user_email
+    ORDER BY LOWER(station.name)::VARCHAR(64);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Test de la procédure list_station_near_user
+SELECT * FROM list_station_near_user('ilian@gmail.com');
