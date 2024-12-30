@@ -285,4 +285,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Test de la procédure list_station_near_user
+SELECT add_transport_type('001', 'bus', 100, 10);
+SELECT add_station(1,'test2','Paris',1,'001');
+SELECT add_station(2,'test2','Paris',1,'001');
+SELECT add_station(3,'TEST3','Paris',1,'001');
+SELECT add_station(4,'quatrièmeTest','Paris',1,'001');
 SELECT * FROM list_station_near_user('ilian@gmail.com');
