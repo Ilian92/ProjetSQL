@@ -271,7 +271,7 @@ UPDATE subscription SET date_sub = '2022_12_07' WHERE email = 'ilian@gmail.com';
 SELECT * FROM view_old_subscription;
 
 -- EXERCICE 11 ##################################
--- Création de list_station_near_user
+-- Création de la procédure list_station_near_user
 CREATE OR REPLACE FUNCTION list_station_near_user(user_email VARCHAR(128))
 RETURNS SETOF VARCHAR(64) AS $$
 BEGIN
