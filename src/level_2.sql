@@ -267,7 +267,7 @@ ORDER BY CONCAT(person.firstname, ' ', person.lastname), offer.name;
 -- POSTIT: Modifier la vérification de la date quand une colonne date_status_update sera ajoutée
 
 -- Test de la vue view_old_subscription
-UPDATE subscription SET date_sub = '2022_12_07' WHERE email = 'ilian@gmail.com';
+UPDATE subscription SET date_sub = '2022-12-07' WHERE email = 'ilian@gmail.com';
 SELECT * FROM view_old_subscription;
 
 -- EXERCICE 11 ##################################
@@ -291,3 +291,38 @@ SELECT add_station(2,'test2','Paris',1,'001');
 SELECT add_station(3,'TEST3','Paris',1,'001');
 SELECT add_station(4,'quatrièmeTest','Paris',1,'001');
 SELECT * FROM list_station_near_user('ilian@gmail.com');
+
+-- EXERCICE 12 ##################################
+-- Création de la procédure list_subscribers
+CREATE OR REPLACE FUNCTION list_subscribers(offer_code VARCHAR(64))
+RETURNS SETOF VARCHAR(64) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT DISTINCT CONCAT(person.firstname, ' ', person.lastname)::VARCHAR(64) AS full_name
+    FROM person
+    INNER JOIN subscription ON person.email = subscription.email
+    WHERE subscription.code = offer_code
+    ORDER BY full_name;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Test de la procédure list_subscribers
+SELECT * FROM list_subscribers('offer_code_example');
+
+-- EXERCICE 13 ##################################
+-- Création de la procédure list_subscription
+CREATE OR REPLACE FUNCTION list_subscription(user_email VARCHAR(128), subscription_date DATE)
+RETURNS SETOF VARCHAR(64) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT subscription.code
+    FROM subscription
+    WHERE subscription.email = user_email
+      AND subscription.status = 'Registered'
+      AND subscription.date_sub = subscription_date
+    ORDER BY subscription.code;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Test de la procédure list_subscription
+SELECT * FROM list_subscription('ilian@gmail.com', '2022-12-07');
