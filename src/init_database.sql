@@ -1,7 +1,7 @@
 --Lien doc postgresql erreurs: https://www.postgresql.org/docs/current/errcodes-appendix.html
 
 --Créer un docker "postgresProjet" en se plaçant d'abord dans le dossier local src: docker run --name postgresProjet -d -p 55433:5432 -e POSTGRES_PASSWORD=toto --mount type=bind,src=$(pwd),target=/sql postgres:15-alpine
---Se connecter au docker: docker exec -it postgresProjet 
+--Se connecter au docker: docker exec -it postgresProjet bash
 --Se placer dans le dossier sql: cd sql
 --Se connecter à la base de données: psql -U postgres
 --Lancer le(s) script(s): \i [nom du fichier].sql
@@ -114,11 +114,11 @@ ALTER TABLE "station_to_line" ADD FOREIGN KEY ("line") REFERENCES "line" ("code"
 
 ALTER TABLE "station_to_line" ADD FOREIGN KEY ("station") REFERENCES "station" ("id");
 
-ALTER TABLE "employee" ADD FOREIGN KEY ("email") REFERENCES "person" ("email"); 
+ALTER TABLE "employee" ADD FOREIGN KEY ("email") REFERENCES "person" ("email") ON UPDATE CASCADE;
 
 ALTER TABLE "contract" ADD FOREIGN KEY ("login") REFERENCES "employee" ("login"); 
 
-ALTER TABLE "contract" ADD FOREIGN KEY ("email") REFERENCES "employee" ("email"); 
+ALTER TABLE "contract" ADD FOREIGN KEY ("email") REFERENCES "employee" ("email") ON UPDATE CASCADE; 
 
 ALTER TABLE "contract" ADD FOREIGN KEY ("service") REFERENCES "service" ("name");
 
@@ -132,7 +132,7 @@ ALTER TABLE "offer" ADD FOREIGN KEY ("zone_from") REFERENCES "zone" ("id");
 
 ALTER TABLE "offer" ADD FOREIGN KEY ("zone_to") REFERENCES "zone" ("id");
 
-ALTER TABLE "subscription" ADD FOREIGN KEY ("email") REFERENCES "person" ("email"); 
+ALTER TABLE "subscription" ADD FOREIGN KEY ("email") REFERENCES "person" ("email") ON UPDATE CASCADE; 
 
 ALTER TABLE "subscription" ADD FOREIGN KEY ("code") REFERENCES "offer" ("code");
 
