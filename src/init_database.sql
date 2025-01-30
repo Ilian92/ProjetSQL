@@ -70,7 +70,7 @@ CREATE TABLE "contract" (
 );
 
 CREATE TABLE "journey" (
-  "email" int,
+  "email" VARCHAR(128),
   "time_start" date,
   "time_end" date,
   "station_start" int,
