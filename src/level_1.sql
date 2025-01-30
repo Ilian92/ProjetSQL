@@ -190,7 +190,7 @@ LANGUAGE plpgsql;
 -- Exemple d'utilisation de add_station_to_line
 SELECT add_station_to_line('M1', 1, 1);
 SELECT add_station_to_line('M1', 2, 2);
-SELECT add_station_to_line('B12', 2, 1);
+SELECT add_station_to_line('B12', 3, 1);
 
 -- vue capacité 50 - 300 passagers
 CREATE OR REPLACE VIEW view_transport_50_300_users AS 

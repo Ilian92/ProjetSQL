@@ -99,7 +99,7 @@ CREATE TABLE "bill" (
   "email" VARCHAR(128),
   "year" int,
   "month" int,
-  "montant_total" decimal(10,2),
+  "total_amount" decimal(10,2),
   "status" varchar(20)
 );
 
@@ -122,7 +122,7 @@ ALTER TABLE "contract" ADD FOREIGN KEY ("email") REFERENCES "employee" ("email")
 
 ALTER TABLE "contract" ADD FOREIGN KEY ("service") REFERENCES "service" ("name");
 
-ALTER TABLE "journey" ADD FOREIGN KEY ("email") REFERENCES "person" ("id");
+ALTER TABLE "journey" ADD FOREIGN KEY ("email") REFERENCES "person" ("email");
 
 ALTER TABLE "journey" ADD FOREIGN KEY ("station_start") REFERENCES "station" ("id");
 
