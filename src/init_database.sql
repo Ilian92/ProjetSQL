@@ -6,7 +6,7 @@
 --Se connecter à la base de données: psql -U postgres
 --Lancer le(s) script(s): \i [nom du fichier].sql
 
-DROP TABLE IF EXISTS "transport_type", "zone", "station", "line", "station_to_line", "person", "employee", "contract", "offer", "subscription", "bill", "journey", "service" CASCADE;
+DROP TABLE IF EXISTS "transport_type", "zone", "station", "line", "station_to_line", "person", "employee", "contract", "offer", "subscription", "bill", "journey", "service", "offers_history" CASCADE;
 
 CREATE TABLE "transport_type" (
   "code" VARCHAR(3) UNIQUE PRIMARY KEY,
@@ -101,6 +101,13 @@ CREATE TABLE "bill" (
   "month" int,
   "montant_total" decimal(10,2),
   "status" varchar(20)
+);
+
+CREATE TABLE "offers_history" (
+  "offer_code" VARCHAR(5) NOT NULL,
+  "modified_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  "old_price" DECIMAL(10,2),
+  "new_price" DECIMAL(10,2)
 );
 
 -- ajout des clés étrangères

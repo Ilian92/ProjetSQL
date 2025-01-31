@@ -1,0 +1,2 @@
+-- EXERCICE 1 ##################################
+-- Trriger store_offer_updates
