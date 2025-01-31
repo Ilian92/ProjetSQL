@@ -1,5 +1,5 @@
 -- EXERCICE 1 ##################################
--- Trriger store_offer_updates
+-- Trigger store_offer_updates
 CREATE OR REPLACE FUNCTION store_offer_updates()
 RETURNS trigger AS
 $$
@@ -16,3 +16,21 @@ CREATE TRIGGER t_store_offer_updates
 AFTER UPDATE OF price ON offer
 FOR EACH ROW
 EXECUTE FUNCTION store_offer_updates();
+
+-- EXERCICE 2 ##################################
+-- Trigger store_status_updates
+CREATE OR REPLACE FUNCTION store_status_updates()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF OLD.status IS DISTINCT FROM NEW.status THEN
+        INSERT INTO status_history (user_email, sub_code, old_status, new_status)
+        VALUES (OLD.email, OLD.code, OLD.status, NEW.status);
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER t_store_status_updates
+AFTER UPDATE OF status ON subscription
+FOR EACH ROW
+EXECUTE FUNCTION store_status_updates();

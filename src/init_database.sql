@@ -6,7 +6,7 @@
 --Se connecter à la base de données: psql -U postgres
 --Lancer le(s) script(s): \i [nom du fichier].sql
 
-DROP TABLE IF EXISTS "transport_type", "zone", "station", "line", "station_to_line", "person", "employee", "contract", "offer", "subscription", "bill", "journey", "service", "offers_history" CASCADE;
+DROP TABLE IF EXISTS "transport_type", "zone", "station", "line", "station_to_line", "person", "employee", "contract", "offer", "subscription", "bill", "journey", "service", "offers_history", "status_history" CASCADE;
 
 CREATE TABLE "transport_type" (
   "code" VARCHAR(3) UNIQUE PRIMARY KEY,
@@ -110,6 +110,14 @@ CREATE TABLE "offers_history" (
   "new_price" DECIMAL(10,2)
 );
 
+CREATE TABLE "status_history" (
+  "user_email" VARCHAR(128) NOT NULL,
+  "sub_code" VARCHAR(5) NOT NULL,
+  "modified_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  "old_status" VARCHAR(20),
+  "new_status" VARCHAR(20)
+);
+
 -- ajout des clés étrangères
 ALTER TABLE "station" ADD FOREIGN KEY ("zone") REFERENCES "zone" ("id");
 
@@ -139,7 +147,7 @@ ALTER TABLE "offer" ADD FOREIGN KEY ("zone_from") REFERENCES "zone" ("id");
 
 ALTER TABLE "offer" ADD FOREIGN KEY ("zone_to") REFERENCES "zone" ("id");
 
-ALTER TABLE "subscription" ADD FOREIGN KEY ("email") REFERENCES "person" ("email") ON UPDATE CASCADE; 
+ALTER TABLE "subscription" ADD FOREIGN KEY ("email") REFERENCES "person" ("email") ON UPDATE CASCADE;
 
 ALTER TABLE "subscription" ADD FOREIGN KEY ("code") REFERENCES "offer" ("code");
 
