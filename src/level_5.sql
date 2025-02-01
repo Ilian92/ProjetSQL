@@ -34,3 +34,26 @@ CREATE TRIGGER t_store_status_updates
 AFTER UPDATE OF status ON subscription
 FOR EACH ROW
 EXECUTE FUNCTION store_status_updates();
+
+-- EXERCICE 3 ##################################
+-- Vue view_offer_updates
+CREATE OR REPLACE VIEW view_offer_updates AS
+SELECT 
+    offer_code,
+    modified_at::TIMESTAMP WITHOUT TIME ZONE AS modification_date,
+    old_price,
+    new_price
+FROM offers_history
+ORDER BY modified_at;
+
+-- EXERCICE 4 ##################################
+-- Vue view_status_updates
+CREATE OR REPLACE VIEW view_status_updates AS
+SELECT 
+    user_email,
+    sub_code,
+    modified_at::TIMESTAMP WITHOUT TIME ZONE AS modification_date,
+    old_status,
+    new_status
+FROM status_history
+ORDER BY modified_at;
