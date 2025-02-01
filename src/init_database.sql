@@ -6,6 +6,8 @@
 --Se connecter à la base de données: psql -U postgres
 --Lancer le(s) script(s): \i [nom du fichier].sql
 
+--JUSTE UTILISER LE FICHIER COMPOSE.YML FINALEMENT
+
 DROP TABLE IF EXISTS "transport_type", "zone", "station", "line", "station_to_line", "person", "employee", "contract", "offer", "subscription", "bill", "journey", "service", "offers_history", "status_history" CASCADE;
 
 CREATE TABLE "transport_type" (
