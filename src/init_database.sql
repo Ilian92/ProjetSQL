@@ -71,8 +71,8 @@ CREATE TABLE "contract" (
 
 CREATE TABLE "journey" (
   "email" VARCHAR(128),
-  "time_start" date,
-  "time_end" date,
+  "time_start" TIMESTAMP,
+  "time_end" TIMESTAMP,
   "station_start" int,
   "station_end" int
 );

@@ -32,11 +32,6 @@ END;
 $$
 LANGUAGE plpgsql;
 
--- Exemple d'utilisation de add_transport_type
-SELECT add_transport_type('BUS', 'Bus', 50, 10);
-SELECT add_transport_type('MTR', 'Metro', 250, 5);
-SELECT add_transport_type('TRM', 'Tramway', 100, 8);
-
 -- fonction add_zone
 
 CREATE OR REPLACE FUNCTION add_zone(new_name VARCHAR(32), new_price FLOAT)
@@ -65,11 +60,6 @@ RETURN FALSE;
 END;
 $$
 LANGUAGE plpgsql;
-
--- Exemple d'utilisation de add_zone
-SELECT add_zone('Centre', 2.50);
-SELECT add_zone('Périphérie', 3.20);
-SELECT add_zone('Banlieue', 4.10);
 
 -- fonction add_station
 
@@ -105,12 +95,6 @@ END;
 $$
 LANGUAGE plpgsql;
 
--- Exemple d'utilisation de add_station
-SELECT add_station(1, 'Gare de Lyon', 'Paris', 1, 'MTR');
-SELECT add_station(2, 'République', 'Paris', 1, 'BUS');
-SELECT add_station(3, 'Nation', 'Paris', 2, 'TRM');
-SELECT add_station(4, 'Diderot', 'Cergy', 1, 'MTR');
-
 -- fonction add_line
 
 CREATE OR REPLACE FUNCTION  add_line(new_code VARCHAR(3), new_transport_type VARCHAR(3))
@@ -139,10 +123,6 @@ END;
 $$
 LANGUAGE plpgsql;
 
--- Exemple d'utilisation de add_line
-SELECT add_line('M1', 'MTR');
-SELECT add_line('B12', 'BUS');
-SELECT add_line('T3', 'TRM');
 
 -- fonction add_station_to_line
 
@@ -187,10 +167,6 @@ END;
 $$
 LANGUAGE plpgsql;
 
--- Exemple d'utilisation de add_station_to_line
-SELECT add_station_to_line('M1', 1, 1);
-SELECT add_station_to_line('M1', 2, 2);
-SELECT add_station_to_line('B12', 3, 1);
 
 -- vue capacité 50 - 300 passagers
 CREATE OR REPLACE VIEW view_transport_50_300_users AS 
@@ -240,5 +216,60 @@ ORDER BY station.name ASC, capacity ASC;
 
 --Procédures liste stations d'une ligne
 
+CREATE OR REPLACE FUNCTION list_station_in_line(line_code VARCHAR(3)) 
+RETURNS SETOF VARCHAR(64) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT station.name
+    FROM station
+    JOIN station_to_line stl ON station.id = stl.station
+    WHERE stl.line = line_code
+    ORDER BY stl.pos ASC;
 
+END;
+$$ LANGUAGE plpgsql;
 
+-- Procédures liste types d'une zone
+
+CREATE OR REPLACE FUNCTION list_types_in_zone(zone INT) 
+RETURNS SETOF VARCHAR(32) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT DISTINCT 
+    tt.name
+    FROM station 
+    JOIN transport_type tt ON station.type = tt.code
+    WHERE station.zone = zone
+    ORDER BY tt.name ASC;
+
+END;
+$$ LANGUAGE plpgsql;
+
+-- Procédure get_cost_travel
+
+CREATE OR REPLACE FUNCTION get_cost_travel(start_station INT, end_station INT) 
+RETURNS FLOAT AS $$
+DECLARE
+    min_zone INT;
+    max_zone INT;
+    zone_price_sum FLOAT;
+BEGIN 
+    IF NOT EXISTS (SELECT 1 FROM station WHERE id = start_station) OR NOT EXISTS (SELECT 1 FROM station WHERE id = end_station) THEN
+        RAISE NOTICE 'Une des stations n''existe pas';
+        RETURN 0;
+    END IF;
+
+    SELECT
+        LEAST(s1.zone, s2.zone),
+        GREATEST(s1.zone, s2.zone)
+    INTO min_zone, max_zone
+    FROM station s1 ,station s2
+    WHERE s1.id = start_station AND s2.id = end_station;
+
+    SELECT SUM(price) INTO zone_price_sum 
+    FROM zone 
+    WHERE id BETWEEN min_zone AND max_zone;
+
+    RETURN zone_price_sum;
+END;
+$$ LANGUAGE plpgsql;
