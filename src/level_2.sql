@@ -26,9 +26,6 @@ EXCEPTION
 END;
 $$ LANGUAGE plpgsql;
 
--- Test de la fonction add_person
-SELECT add_person('ilian','igoudjil','ilian@gmail.com','0601020304',' 10 Rue crampté','Paris','75002');
-
 -- EXERCICE 2 ##################################
 -- Création de la fonction add_offer
 CREATE OR REPLACE FUNCTION add_offer(
@@ -72,14 +69,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
---Création de zones
-SELECT add_zone('zone1', 11);
-SELECT add_zone('zone2', 12);
-SELECT add_zone('zone3', 13);
-SELECT add_zone('zone4', 14);
--- Test de la fonction add_offer
-SELECT add_offer('00001', 'Forfait Jeune', 14.99, 1, 2, 3);
-
 -- EXERCICE 3 ##################################
 -- Création de la fonction add_subscription (date_sub définie automatiquement à la date de création)
 CREATE OR REPLACE FUNCTION add_subscription(
@@ -121,9 +110,6 @@ EXCEPTION
 END;
 $$ LANGUAGE plpgsql;
 
--- Test de la fonction add_subscription
-SELECT add_subscription(1, 'ilian@gmail.com', '00001');
-
 -- EXERCICE 4 ##################################
 -- Création de la fonction update_status
 -- POSTIT: Rajouter une date de status pour savoir quand le status a été modifié
@@ -160,9 +146,6 @@ EXCEPTION
 END;
 $$ LANGUAGE plpgsql;
 
--- Test de la fonction update_status
-SELECT update_status(1, 'Pending');
-
 -- EXERCICE 5 ##################################
 -- Création de la fonction update_offer_price
 CREATE OR REPLACE FUNCTION update_offer_price(
@@ -197,9 +180,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Test de la fonction update_offer_price
-SELECT update_offer_price('00001', 19.99);
-
 -- EXERCICE 6 ################################
 -- Création de la vue view_user_small_name
 CREATE OR REPLACE VIEW view_user_small_name AS
@@ -207,10 +187,6 @@ SELECT firstname, lastname
 FROM person
 WHERE LENGTH(lastname) <= 4
 ORDER BY lastname, firstname;
-
--- Test de la vue view_user_small_name
-SELECT add_person('ilian','test','test@gmail.com','0612345678','10 Rue de la loutre','Levallois','92300');
-SELECT * FROM view_user_small_name;
 
 -- EXERCICE 7 ################################
 -- Création de la vue view_user_subscription
@@ -223,9 +199,6 @@ INNER JOIN subscription ON person.email = subscription.email
 INNER JOIN offer ON subscription.code = offer.code
 ORDER BY CONCAT(person.firstname, ' ', person.lastname), offer.name;
 
--- Test de la vue view_user_subscription
-SELECT * FROM view_user_subscription;
-
 -- EXERCICE 8 ####################################
 -- Création de la vue view_unloved_offers
 CREATE OR REPLACE VIEW view_unloved_offers AS
@@ -235,9 +208,6 @@ LEFT JOIN subscription ON offer.code = subscription.code
 WHERE subscription.code IS NULL
 ORDER BY offer.name;
 
--- Test de la vue view_unloved_offers
-SELECT * FROM view_unloved_offers;
-
 -- EXERCICE 9 ###################################
 -- Création de la vue view_pending_subscriptions
 CREATE OR REPLACE VIEW view_pending_subscriptions AS
@@ -246,9 +216,6 @@ FROM person
 INNER JOIN subscription ON person.email = subscription.email
 WHERE subscription.status = 'Pending'
 ORDER BY subscription.date_sub;
-
--- Test de la vue view_pending_subscriptions
-SELECT * FROM view_pending_subscriptions;
 
 -- EXERCICE 10 ###################################
 -- Création de la vue view_old_subscription
@@ -264,11 +231,6 @@ INNER JOIN offer ON subscription.code = offer.code
 WHERE (subscription.status = 'Incomplete' OR subscription.status = 'Pending')
   AND subscription.date_sub <= CURRENT_DATE - INTERVAL '1 year'
 ORDER BY CONCAT(person.firstname, ' ', person.lastname), offer.name;
--- POSTIT: Modifier la vérification de la date quand une colonne date_status_update sera ajoutée
-
--- Test de la vue view_old_subscription
-UPDATE subscription SET date_sub = '2022-12-07' WHERE email = 'ilian@gmail.com';
-SELECT * FROM view_old_subscription;
 
 -- EXERCICE 11 ##################################
 -- Création de la procédure list_station_near_user
@@ -284,14 +246,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Test de la procédure list_station_near_user
-SELECT add_transport_type('001', 'bus', 100, 10);
-SELECT add_station(1,'test2','Paris',1,'001');
-SELECT add_station(2,'test2','Paris',1,'001');
-SELECT add_station(3,'TEST3','Paris',1,'001');
-SELECT add_station(4,'quatrièmeTest','Paris',1,'001');
-SELECT * FROM list_station_near_user('ilian@gmail.com');
-
 -- EXERCICE 12 ##################################
 -- Création de la procédure list_subscribers
 CREATE OR REPLACE FUNCTION list_subscribers(offer_code VARCHAR(64))
@@ -305,9 +259,6 @@ BEGIN
     ORDER BY full_name;
 END;
 $$ LANGUAGE plpgsql;
-
--- Test de la procédure list_subscribers
-SELECT * FROM list_subscribers('offer_code_example');
 
 -- EXERCICE 13 ##################################
 -- Création de la procédure list_subscription
@@ -323,6 +274,3 @@ BEGIN
     ORDER BY subscription.code;
 END;
 $$ LANGUAGE plpgsql;
-
--- Test de la procédure list_subscription
-SELECT * FROM list_subscription('ilian@gmail.com', '2022-12-07');

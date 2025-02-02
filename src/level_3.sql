@@ -22,10 +22,6 @@ EXCEPTION
 END;
 $$ LANGUAGE plpgsql;
 
--- Test de la fonction add_service
-SELECT add_service('Comptabilité', 10);
-SELECT add_service('Contrôleurs', 100);
-
 -- EXERCICE 2 ##################################
 -- Fonction add_contract
 CREATE OR REPLACE FUNCTION add_contract(new_login VARCHAR(20), new_email VARCHAR(128), new_date_beginning DATE, new_service VARCHAR(32))
@@ -55,10 +51,6 @@ EXCEPTION
 END;
 $$ LANGUAGE plpgsql;
 
--- Test de la fonction add_contract
-INSERT INTO employee (login, email) VALUES ('ilian_dev', 'ilian@gmail.com');
-SELECT add_contract('ilian_dev', 'ilian@gmail.com', '2025-01-01', 'Comptabilité');
-
 -- EXERCICE 3 ##################################
 -- Fonction end_contract
 CREATE OR REPLACE FUNCTION end_contract(employee_email VARCHAR(128), end_date DATE)
@@ -86,9 +78,6 @@ EXCEPTION
 END;
 $$ LANGUAGE plpgsql;
 
--- Test de la fonction end_contract
-SELECT end_contract('ilian@gmail.com', '2025-06-01');
-
 -- EXERCICE 4 ##################################
 -- Fonction update_service
 CREATE OR REPLACE FUNCTION update_service(service_name VARCHAR(32), new_discount INT)
@@ -112,9 +101,6 @@ EXCEPTION
         RETURN FALSE;
 END;
 $$ LANGUAGE plpgsql;
-
--- Test de la fonction update_service
-SELECT update_service('Comptabilité', 15);
 
 -- EXERCICE 5 ##################################
 -- Fonction update_employee_mail
@@ -152,9 +138,6 @@ EXCEPTION
 END;
 $$ LANGUAGE plpgsql;
 
--- Test de la fonction update_employee_mail
-SELECT update_employee_mail('ilian_dev', 'ilian.new@gmail.com');
-
 -- EXERCICE 6 ##################################
 -- Vue view_employees
 CREATE OR REPLACE VIEW view_employees AS
@@ -170,9 +153,6 @@ JOIN service s ON c.service = s.name
 WHERE c.end_contract IS NULL OR c.end_contract > CURRENT_DATE
 ORDER BY p.lastname, p.firstname, e.login;
 
--- Test de la vue view_employees
-SELECT * FROM view_employees;
-
 -- EXERCICE 7 ##################################
 -- Vue view_nb_employees_per_service
 CREATE OR REPLACE VIEW view_nb_employees_per_service AS
@@ -185,9 +165,6 @@ LEFT JOIN contract c ON s.name = c.service
 GROUP BY s.name
 ORDER BY s.name;
 
--- Test de la vue view_nb_employees_per_service
-SELECT * FROM view_nb_employees_per_service;
-
 -- EXERCICE 8 ##################################
 -- Procédure list_login_employee
 CREATE OR REPLACE FUNCTION list_login_employee(date_service DATE)
@@ -199,9 +176,6 @@ BEGIN
     ORDER BY login;
 END;
 $$ LANGUAGE plpgsql;
-
--- Test de la procédure list_login_employee
-SELECT * FROM list_login_employee('2025-01-15');
 
 -- EXERCICE 9 ##################################
 -- Procédure list_not_employee
@@ -233,9 +207,6 @@ BEGIN
     ORDER BY p.lastname, p.firstname;
 END;
 $$ LANGUAGE plpgsql;
-
--- Test de la procédure list_not_employee
-SELECT * FROM list_not_employee('2025-01-15');
 
 -- EXERCICE 10 ##################################
 -- Procédure list_subscription_history
@@ -274,6 +245,3 @@ BEGIN
     ORDER BY start_date;
 END;
 $$ LANGUAGE plpgsql;
-
--- Test list_subscription_history
-SELECT * FROM list_subscription_history('ilian.new@gmail.com');
