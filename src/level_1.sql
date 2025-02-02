@@ -123,6 +123,7 @@ END;
 $$
 LANGUAGE plpgsql;
 
+
 -- fonction add_station_to_line
 
 CREATE OR REPLACE FUNCTION add_station_to_line(new_line VARCHAR(3), new_station INT, new_pos INT)
@@ -165,6 +166,7 @@ RETURN FALSE;
 END;
 $$
 LANGUAGE plpgsql;
+
 
 -- vue capacité 50 - 300 passagers
 CREATE OR REPLACE VIEW view_transport_50_300_users AS 
@@ -214,5 +216,60 @@ ORDER BY station.name ASC, capacity ASC;
 
 --Procédures liste stations d'une ligne
 
+CREATE OR REPLACE FUNCTION list_station_in_line(line_code VARCHAR(3)) 
+RETURNS SETOF VARCHAR(64) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT station.name
+    FROM station
+    JOIN station_to_line stl ON station.id = stl.station
+    WHERE stl.line = line_code
+    ORDER BY stl.pos ASC;
 
+END;
+$$ LANGUAGE plpgsql;
 
+-- Procédures liste types d'une zone
+
+CREATE OR REPLACE FUNCTION list_types_in_zone(type_zone INT) 
+RETURNS SETOF VARCHAR(32) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT DISTINCT 
+    tt.name
+    FROM station 
+    JOIN transport_type tt ON station.type = tt.code
+    WHERE station.zone = type_zone
+    ORDER BY tt.name ASC;
+
+END;
+$$ LANGUAGE plpgsql;
+
+-- Procédure get_cost_travel
+
+CREATE OR REPLACE FUNCTION get_cost_travel(start_station INT, end_station INT) 
+RETURNS FLOAT AS $$
+DECLARE
+    min_zone INT;
+    max_zone INT;
+    zone_price_sum FLOAT;
+BEGIN 
+    IF NOT EXISTS (SELECT 1 FROM station WHERE id = start_station) OR NOT EXISTS (SELECT 1 FROM station WHERE id = end_station) THEN
+        RAISE NOTICE 'Une des stations n''existe pas';
+        RETURN 0;
+    END IF;
+
+    SELECT
+        LEAST(s1.zone, s2.zone),
+        GREATEST(s1.zone, s2.zone)
+    INTO min_zone, max_zone
+    FROM station s1 ,station s2
+    WHERE s1.id = start_station AND s2.id = end_station;
+
+    SELECT SUM(price) INTO zone_price_sum 
+    FROM zone 
+    WHERE id BETWEEN min_zone AND max_zone;
+
+    RETURN zone_price_sum;
+END;
+$$ LANGUAGE plpgsql;
