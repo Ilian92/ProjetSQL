@@ -231,7 +231,7 @@ $$ LANGUAGE plpgsql;
 
 -- Procédures liste types d'une zone
 
-CREATE OR REPLACE FUNCTION list_types_in_zone(zone INT) 
+CREATE OR REPLACE FUNCTION list_types_in_zone(type_zone INT) 
 RETURNS SETOF VARCHAR(32) AS $$
 BEGIN
     RETURN QUERY
@@ -239,7 +239,7 @@ BEGIN
     tt.name
     FROM station 
     JOIN transport_type tt ON station.type = tt.code
-    WHERE station.zone = zone
+    WHERE station.zone = type_zone
     ORDER BY tt.name ASC;
 
 END;

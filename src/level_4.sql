@@ -203,10 +203,6 @@ DECLARE
     bill_paid VARCHAR(20);
     total_amount NUMERIC;
 BEGIN
-    DECLARE
-    bill_paid VARCHAR(20);
-    total_amount NUMERIC;
-BEGIN
     IF NOT EXISTS (SELECT 1 FROM person WHERE person.email = pay_bill.email) THEN
         RAISE NOTICE 'Utilissateur "%" introuvable', pay_bill.email;
         RETURN FALSE;
@@ -282,7 +278,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE VIEW view_all_bills AS
 SELECT person.lastname, person.firstname, bill.id AS bill_number, bill.total_amount AS bill_amount
     FROM person
-    JOIN bill ON person.email = bill.email;
+    JOIN bill ON person.email = bill.email
 ORDER BY bill.id ASC;
 
 -- Création de la fonction view_bill_per_month
